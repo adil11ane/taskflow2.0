@@ -1,0 +1,66 @@
+
+
+services:
+  # 1. БАЗА ДАННЫХ POSTGRESQL (Скачивается автоматически)
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: learning_postgres
+    restart: always
+    env_file:
+      - .env  # Берет POSTGRES_DB, USER и PASSWORD из вашего файла .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data  # Данные пользователей сохраняются на жесткий диск
+    ports:
+      - "5432:5432" # Открываем порт, чтобы вы могли подключиться через DBeaver / DataGrip
+
+  # 2. КЭШ И АВТОРИЗАЦИЯ REDIS (Скачивается автоматически)
+  redis_cache:
+    image: redis:7-alpine
+    container_name: learning_redis
+    restart: always
+    ports:
+      - "6379:6379" # Открываем порт для тестов, если нужно заглянуть внутрь Redis
+
+  # 3. БЭКЕНД НА DJANGO
+  backend:
+    build:
+      context: ./backend        # Указывает на папку backend
+      dockerfile: Dockerfile     # Собирает ваш Python-образ по инструкции из Dockerfile
+    container_name: learning_backend
+    restart: always
+    env_file:
+      - .env                    # Пробрасывает DATABASE_URL, REDIS_URL и SECRET_KEY
+    volumes:
+      - ./backend:/app          # Монтирует код для автообновления (горячая перезагрузка при разработке)
+    depends_on:
+      - postgres_db             # Django ждет полного запуска базы данных
+      - redis_cache             # Django ждет полного запуска кэша
+
+  # 4. ФРОНТЕНД (HTML/CSS/JS)
+  frontend:
+    build:
+      context: ./frontend       # Указывает на папку frontend
+      dockerfile: Dockerfile     # Собирает образ Nginx, который раздает файлы из папки src/
+    container_name: pure_frontend
+    restart: always
+    volumes:
+      - ./frontend/src:/usr/share/nginx/html:ro
+
+  # 5. ГЛАВНЫЙ ВХОДНОЙ ШЛЮЗ (Nginx)
+  gateway:
+    build:
+      context: ./nginx          # Указывает на папку nginx
+      dockerfile: Dockerfile     # Собирает ваш Nginx со встроенным def.config внутри
+    container_name: nginx_gateway
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf/def.config:/etc/nginx/conf.d/default.conf:ro                 # Пробрасывает порт 80 вашего компьютера в Docker
+    depends_on:
+      - backend                 # Ждет готовности бэкенда
+      - frontend                # Ждет готовности фронтенда
+
+# ОБЪЯВЛЯЕМ ПОСТОЯННЫЙ ТОМ ДЛЯ ХРАНЕНИЯ ДАННЫХ POSTGRESQL
+volumes:
+  pg_data:
