@@ -32,7 +32,7 @@
     if (!email || !password) return showAlert('login-error', 'Please fill in all fields.');
     setLoading('login-btn', true);
     try {
-      const res = await fetch('api/users/login/', {
+      const res = await fetch('/api/users/login/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email, password})
@@ -59,7 +59,7 @@
     if (!email || !password) return showAlert('register-error', 'Email and password are required.');
     setLoading('register-btn', true);
     try {
-      const res = await fetch('api/users/register/', {
+      const res = await fetch('/api/users/register/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email, password, first_name, last_name})
@@ -71,7 +71,7 @@
       }
       showAlert('register-success', 'Account created! Signing you in…', 'success');
       // Auto-login
-      const lr = await fetch('api/users/login/', {
+      const lr = await fetch('/api/users/login/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email, password})
