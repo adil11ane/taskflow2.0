@@ -1,4 +1,5 @@
-
+networks:
+  dev:
 
 services:
   # 1. БАЗА ДАННЫХ POSTGRESQL (Скачивается автоматически)
@@ -12,6 +13,8 @@ services:
       - pg_data:/var/lib/postgresql/data  # Данные пользователей сохраняются на жесткий диск
     ports:
       - "5432:5432" # Открываем порт, чтобы вы могли подключиться через DBeaver / DataGrip
+    networks:
+      - dev
 
   # 2. КЭШ И АВТОРИЗАЦИЯ REDIS (Скачивается автоматически)
   redis_cache:
@@ -20,6 +23,8 @@ services:
     restart: always
     ports:
       - "6379:6379" # Открываем порт для тестов, если нужно заглянуть внутрь Redis
+    networks:
+      - dev
 
   # 3. БЭКЕНД НА DJANGO
   backend:
@@ -35,6 +40,9 @@ services:
     depends_on:
       - postgres_db             # Django ждет полного запуска базы данных
       - redis_cache             # Django ждет полного запуска кэша
+    networks:
+      - dev
+      
 
   # 4. ФРОНТЕНД (HTML/CSS/JS)
   frontend:
@@ -45,6 +53,8 @@ services:
     restart: always
     volumes:
       - ./frontend/src:/usr/share/nginx/html:ro
+    networks:
+      - dev
 
   # 5. ГЛАВНЫЙ ВХОДНОЙ ШЛЮЗ (Nginx)
   gateway:
@@ -60,6 +70,8 @@ services:
     depends_on:
       - backend                 # Ждет готовности бэкенда
       - frontend                # Ждет готовности фронтенда
+    networks:
+      - dev
 
 # ОБЪЯВЛЯЕМ ПОСТОЯННЫЙ ТОМ ДЛЯ ХРАНЕНИЯ ДАННЫХ POSTGRESQL
 volumes:
