@@ -176,5 +176,10 @@ CACHES = {
 }
 
 
-DEFAULT_FROM_EMAIL= os.environ.get("DEFAULT_FROM_EMAIL", "adilnurmagambetov06@gmail.com")
-EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'adilnurmagambetov06@gmail.com'
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "your-email-password")  # Убедитесь, что пароль для почты хранится в переменных окружения
+DEFAULT_FROM_EMAIL = 'adilnurmagambetov06@gmail.com'
