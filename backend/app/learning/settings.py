@@ -3,10 +3,7 @@ from datetime import timedelta
 import dj_database_url
 from dotenv import load_dotenv
 import os
-from datetime import timedelta
-import dj_database_url
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -49,7 +46,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # ← must be FIRST in the list
 ]
 
 ROOT_URLCONF = "learning.urls"
@@ -176,10 +172,15 @@ CACHES = {
 }
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'adilnurmagambetov06@gmail.com'
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "your-email-password")  # Убедитесь, что пароль для почты хранится в переменных окружения
-DEFAULT_FROM_EMAIL = 'adilnurmagambetov06@gmail.com'
+EMAIL_HOST_USER = "adilnurmagambetov06@gmail.com"
+EMAIL_HOST_PASSWORD = os.getenv(
+    "EMAIL_HOST_PASSWORD", "your-email-password"
+)  # Убедитесь, что пароль для почты хранится в переменных окружения
+DEFAULT_FROM_EMAIL = "adilnurmagambetov06@gmail.com"
+
+CLIENT_ID_OAUTH2 = os.getenv("CLIENT_ID_OAUTH2", "cliend-id")
+CLIENT_SECRET_OAUTH2 = os.getenv("CLIENT_SECRET_OAUTH2", "client-secret")

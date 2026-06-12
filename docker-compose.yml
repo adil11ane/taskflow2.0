@@ -46,15 +46,13 @@ services:
 
   # 4. ФРОНТЕНД (HTML/CSS/JS)
   frontend:
-    build:
-      context: ./frontend       # Указывает на папку frontend
-      dockerfile: Dockerfile     # Собирает образ Nginx, который раздает файлы из папки src/
-    container_name: pure_frontend
-    restart: always
-    volumes:
-      - ./frontend/src:/usr/share/nginx/html:ro
-    networks:
-      - dev
+  build:
+    context: ./frontend
+    dockerfile: Dockerfile
+  container_name: taskflow_frontend
+  restart: always
+  networks:
+    - dev
 
   # 5. ГЛАВНЫЙ ВХОДНОЙ ШЛЮЗ (Nginx)
   gateway:

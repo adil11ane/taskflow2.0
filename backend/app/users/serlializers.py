@@ -69,11 +69,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop("code", None)
-        return user.objects.create_user(**validated_data)    # type: ignore[attr-defined]
-    
-
-
-
+        return user.objects.create_user(**validated_data)  # type: ignore[attr-defined]
 
 
 # serializer-helper for comment,project,tasks

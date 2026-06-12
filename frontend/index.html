@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Войти</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      background: #4f46e5;
+      border-radius: 12px;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo svg { width: 24px; height: 24px; fill: #fff; }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1.5px solid #e5e7eb;
+      background: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      color: #111;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-google:hover:not(:disabled) {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .btn-google:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-google svg { flex-shrink: 0; }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #e5e7eb;
+      border-top-color: #6b7280;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error {
+      margin-top: 16px;
+      padding: 10px 14px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #dc2626;
+      text-align: left;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: #9ca3af;
+      font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e7eb;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.6;
+    }
+
+    .note a { color: #4f46e5; text-decoration: none; }
+    .note a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="card">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M13 3L4 14h7l-2 7 9-11h-7z"/></svg>
+    </div>
+
+    <h1>Добро пожаловать</h1>
+    <p class="subtitle">Войдите через Google, чтобы получить доступ к Google Drive и Calendar</p>
+
+    <a
+      :href="authUrl || '#'"
+      class="btn-google"
+      :class="{ disabled: loading || !authUrl }"
+      @click.prevent="handleLogin"
+    >
+      <template v-if="loading">
+        <div class="spinner"></div>
+        <span>Загрузка...</span>
+      </template>
+      <template v-else>
+        <!-- Google G logo -->
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.1-6.1C34.46 3.04 29.48 1 24 1 14.82 1 7.02 6.48 3.58 14.24l7.13 5.54C12.3 13.68 17.66 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.52 24.5c0-1.6-.14-3.14-.4-4.63H24v8.76h12.67c-.55 2.94-2.2 5.43-4.68 7.1l7.18 5.58C43.36 37.27 46.52 31.34 46.52 24.5z"/>
+          <path fill="#FBBC05" d="M10.71 28.22A14.6 14.6 0 0 1 9.5 24c0-1.46.25-2.88.71-4.22L3.08 14.24A23.94 23.94 0 0 0 .5 24c0 3.86.93 7.5 2.58 10.76l7.63-6.54z"/>
+          <path fill="#34A853" d="M24 47c5.48 0 10.08-1.81 13.44-4.92l-7.18-5.58c-1.98 1.33-4.52 2.12-6.26 2.12-6.34 0-11.7-4.18-13.29-9.78l-7.63 6.54C7.02 41.52 14.82 47 24 47z"/>
+          <path fill="none" d="M0 0h48v48H0z"/>
+        </svg>
+        <span>Войти через Google</span>
+      </template>
+    </a>
+
+    <div v-if="error" class="error">
+      {{ error }}
+    </div>
+
+    <div class="divider">или</div>
+
+    <p class="note">
+      Нажимая «Войти», вы разрешаете доступ к Google Drive и Google Calendar.
+      <br/><br/>
+      <a href="#">Политика конфиденциальности</a> · <a href="#">Условия использования</a>
+    </p>
+  </div>
+</div>
+
+<script>
+const { createApp, ref, onMounted } = Vue
+
+createApp({
+  setup() {
+    const authUrl = ref(null)
+    const loading = ref(true)
+    const error = ref(null)
+
+    onMounted(async () => {
+      try {
+        const res = await fetch('http://localhost:8000/auth/google/url')
+        if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`)
+        const url = await res.json()
+        authUrl.value = url
+      } catch (e) {
+        error.value = 'Не удалось подключиться к серверу. Убедитесь, что бэкенд запущен на порту 8000.'
+      } finally {
+        loading.value = false
+      }
+    })
+
+    function handleLogin() {
+      if (!authUrl.value) return
+      window.location.href = authUrl.value
+    }
+
+    return { authUrl, loading, error, handleLogin }
+  }
+}).mount('#app')
+</script>
+</body>
+</html>
