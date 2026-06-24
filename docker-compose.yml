@@ -2,59 +2,59 @@ networks:
   dev:
 
 services:
-  # 1. БАЗА ДАННЫХ POSTGRESQL (Скачивается автоматически)
+
   postgres_db:
     image: postgres:15-alpine
     container_name: learning_postgres
     restart: always
     env_file:
-      - .env  # Берет POSTGRES_DB, USER и PASSWORD из вашего файла .env
+      - .env 
     volumes:
-      - pg_data:/var/lib/postgresql/data  # Данные пользователей сохраняются на жесткий диск
+      - pg_data:/var/lib/postgresql/data 
     ports:
-      - "5432:5432" # Открываем порт, чтобы вы могли подключиться через DBeaver / DataGrip
+      - "5432:5432" 
     networks:
       - dev
 
-  # 2. КЭШ И АВТОРИЗАЦИЯ REDIS (Скачивается автоматически)
+ 
   redis_cache:
     image: redis:7-alpine
     container_name: learning_redis
     restart: always
     ports:
-      - "6379:6379" # Открываем порт для тестов, если нужно заглянуть внутрь Redis
+      - "6379:6379" 
     networks:
       - dev
 
-  # 3. БЭКЕНД НА DJANGO
+
   backend:
     build:
-      context: ./backend        # Указывает на папку backend
-      dockerfile: Dockerfile     # Собирает ваш Python-образ по инструкции из Dockerfile
+      context: ./backend        
+      dockerfile: Dockerfile    
     container_name: learning_backend
     restart: always
     env_file:
-      - .env                    # Пробрасывает DATABASE_URL, REDIS_URL и SECRET_KEY
+      - .env                   
     volumes:
-      - ./backend:/app          # Монтирует код для автообновления (горячая перезагрузка при разработке)
+      - ./backend:/app         
     depends_on:
-      - postgres_db             # Django ждет полного запуска базы данных
-      - redis_cache             # Django ждет полного запуска кэша
+      - postgres_db             
+      - redis_cache          
     networks:
       - dev
       
 
-  # 4. ФРОНТЕНД (HTML/CSS/JS)
-  frontend:
-  build:
-    context: ./frontend
-    dockerfile: Dockerfile
-  container_name: taskflow_frontend
-  restart: always
-  networks:
-    - dev
 
-  # 5. ГЛАВНЫЙ ВХОДНОЙ ШЛЮЗ (Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: taskflow_frontend
+    restart: always
+    networks:
+      - dev
+      
+  
   gateway:
     build:
       context: ./nginx
@@ -83,6 +83,5 @@ services:
     networks:
       - dev
 
-# ОБЪЯВЛЯЕМ ПОСТОЯННЫЙ ТОМ ДЛЯ ХРАНЕНИЯ ДАННЫХ POSTGRESQL
 volumes:
   pg_data:

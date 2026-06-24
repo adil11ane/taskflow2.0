@@ -27,39 +27,37 @@ def generate_google_oauth_url():
 logger = logging.getLogger(__name__)
 
 
-async def get_token_from_google(url: str, data: dict) -> dict | None:
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(url, data=data)
+def get_token_from_google(url: str, data: dict) -> dict | None:
+    try:
+        with httpx.Client() as client:
+            response = client.post(url,data=data)
             response.raise_for_status()
             return response.json()
-        except httpx.HTTPStatusError as error:
-            logger.error(
-                f"Ошибка HTTPX запроса к {error.request.url}:"
-                f"{error.response.status_code} - {error.response.text}"
-            )
+    except httpx.HTTPStatusError as error:
+        logger.error(
+            f"Ошибка HTTPX запроса к {error.request.url}"
+            f"{error.response.status_code} - {error.response.text}"
+        )
+        return None
+    except httpx.RequestError as error:
+        logger.error(f"Ошибка сети при запросе к {error.request.url}: {error}")
+        return None
 
-            return None
-        except httpx.RequestError as error:
-            logger.error(f"Ошибка сети при запросе к {error.request.url}: {error}")
-            return None
-
-
-async def get_user_google_info(access_token: str) -> dict | None:
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(
+def get_user_google_info(access_token: str) -> dict | None:
+    try:
+        with httpx.Client() as client:
+            response = client.get(
                 "https://www.googleapis.com/oauth2/v2/userinfo",
-                headers={"Authorization": f"Bearer { access_token}"},
+                headers={"Authorization": f"Bearer {access_token}"},
             )
             response.raise_for_status()
             return response.json()
-        except httpx.HTTPStatusError as error:
-            logger.error(
-                f"Ошибка HTTP при получении профиля: "
-                f"{error.response.status_code} - {error.response.text}"
-            )
-            return None
-        except httpx.RequestError as error:
-            logger.error(f"Ошибка сети при получении профиля: {error}")
-            return None
+    except httpx.HTTPStatusError as error:
+        logger.error(
+            f"Ошибка HTTP при получении профиля: "
+            f"{error.response.status_code} - {error.response.text}"
+        )
+        return None
+    except httpx.RequestError as error:
+        logger.error(f"Ошибка сети при получении профиля: {error}")
+        return None

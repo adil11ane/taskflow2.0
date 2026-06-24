@@ -1,0 +1,57 @@
+networks:
+  dev:
+
+services:
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: learning_postgres
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - dev
+
+  redis_cache:
+    image: redis:7-alpine
+    container_name: learning_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - dev
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: learning_backend
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres_db
+      - redis_cache
+    networks:
+      - dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: taskflow_frontend
+    restart: always
+    ports:
+      - "5173:80"
+    networks:
+      - dev
+
+volumes:
+  pg_data:

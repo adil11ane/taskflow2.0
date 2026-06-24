@@ -10,12 +10,14 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-ENV PYTHONPATH="app/app/"
-
 COPY app/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt 
 
 COPY . . 
+
+RUN chmod +x /app/app/entrypoint.sh
+
+WORKDIR /app/app
 EXPOSE 8000 
 
-CMD ["gunicorn", "--chdir", "app", "--bind", "0.0.0.0:8000", "learning.wsgi:application"]
+ENTRYPOINT ["/app/app/entrypoint.sh"]

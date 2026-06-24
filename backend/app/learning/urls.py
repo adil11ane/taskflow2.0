@@ -35,4 +35,3 @@ urlpatterns = [
     ),
     path("api/redoc/", SpectacularRedocView.as_view(), name="redoc"),
 ]
-f

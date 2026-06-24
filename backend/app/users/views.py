@@ -14,7 +14,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from django.utils.translation import gettext_lazy as _
 from django.core.cache import cache
-import register_logic
+from . import register_logic
 from .auth_google import (
     generate_google_oauth_url,
     get_token_from_google,
@@ -106,12 +106,12 @@ class UserRegistrationViaGoogle(GenericViewSet):
         return Response({"uri": uri})
 
     @action(methods=["POST"], detail=False, url_path="google/callback")
-    async def register_via_google(self, request):
+    def register_via_google(self, request):
         code = request.data.get("code")
         if not code:
             return Response({"error": "Not provided"}, status=400)
 
-        token_data = await get_token_from_google(
+        token_data =  get_token_from_google(
             url="https://oauth2.googleapis.com/token",
             data={
                 "client_id": CLIENT_ID_OAUTH2,
@@ -125,7 +125,7 @@ class UserRegistrationViaGoogle(GenericViewSet):
         if not token_data or "access_token" not in token_data:
             return Response({"error": "Failed to get token from Google"}, status=400)
 
-        user_info = await get_user_google_info(access_token=token_data["access_token"])
+        user_info =  get_user_google_info(access_token=token_data["access_token"])
 
         if not user_info or "email" not in user_info:
             return Response(
@@ -137,7 +137,6 @@ class UserRegistrationViaGoogle(GenericViewSet):
             defaults={
                 "first_name": user_info.get("given_name", ""),
                 "last_name": user_info.get("family_name", ""),
-                "username": user_info["email"],
             },
         )
 
