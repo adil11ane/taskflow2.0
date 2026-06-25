@@ -173,19 +173,16 @@ const resetToBack = () => {
   background-color: #F3F0FF;
   align-content: center;
 }
-
 .register-v2{
   display: flex;
-  min-height: 100vh ;
+  min-height: 100vh;
   align-items: center;
-  justify-content: left;
+  justify-content: center;
   background-color: #F3F0FF;
   font-family: sans-serif;
-  padding-left: 20px;
-  padding-right: 40px;
   width: 100%;
 }
-.register-card {
+register-card {
   width: 100%;
   max-width: 400px;
   background: white;

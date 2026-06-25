@@ -36,7 +36,7 @@ Thumbs.db
 # Static files collected
 staticfiles/
 static_root/
-
+certbot/
 node_modules/
 dist/
 build/

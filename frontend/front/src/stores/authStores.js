@@ -38,7 +38,7 @@ export const useAuthStore = defineStore('auth',() => {
         user,
         isAuthenticated,
         setToken,
-        setRefreshoToken,
+        setRefreshToken,
         setUser,
         clearAuth
     }

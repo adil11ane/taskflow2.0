@@ -1,7 +1,8 @@
 import apiClient from "./client";
 
 const tasksAPI = {
-    async list(){
+    async list(projectId=null){
+	const params = projectId ? { project: projectId } : {}
         const response = await apiClient.get('/tasks/')
         return response.data
     },

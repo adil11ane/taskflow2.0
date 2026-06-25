@@ -36,7 +36,7 @@ onMounted(async () =>{
     }
 
     try{
-        const data = await authAPI.googleCallback(code)
+        const data = await authAPI.googleCallBack(code)
         storage.setRefreshToken(data.refresh_token)
         storage.setToken(data.access_token)
 
