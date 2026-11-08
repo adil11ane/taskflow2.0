@@ -1,102 +1,91 @@
 # TaskFlow API
 
-REST API для управления задачами, проектами и комментариями.
+A REST API for managing projects, tasks, and comments, with JWT authentication.
 
-## Стек
-- Django 6.0.5
-- Django REST Framework
-- JWT (SimpleJWT)
-- PostgreSQL
+## Tech Stack
 
-## Установка
+- **Backend:** Django 6.0.5, Django REST Framework
+- **Authentication:** JWT (SimpleJWT)
+- **Database:** PostgreSQL
+- **Cache:** Redis
+- **Frontend:** HTML, CSS, JavaScript
+- **Infrastructure:** Docker, Docker Compose, Nginx (reverse proxy)
 
-1. Клонировать репозиторий
+## Getting Started
+
+### Prerequisites
+
+- [Git](https://git-scm.com/)
+- [Docker](https://www.docker.com/) with Docker Compose
+
+### 1. Clone the repository
+
+```bash
 git clone https://github.com/adil11ane/TaskFlow.git
-cd tutorials
+cd TaskFlow
+```
 
-2. Локальная разработка 
-# Запуск local/prod 
-Запуск контейнеров: 
-открыть Terminal -> docker-compose up -d --build
+### 2. Configure environment variables
 
-Просмотр стаус контейнеров:
-'docker compose ps'
+Create your `.env` file from the template and fill in the values (see [Environment Variables](#environment-variables)):
 
-Просмотр логов бэкенд контейнера:
-'docker compose logs backend'
+```bash
+cp .env.example .env
+```
 
-Войти в интерактивную консоль Django shell: 
-'docker compose exec backend python manage.py shell'
+On Windows PowerShell:
 
-Остановка контейнеров:
-также в Terminal -> docker-compose down 
+```powershell
+Copy-Item .env.example .env
+```
 
-3. Продакшен разработка (поменяйте в своем ранее созданом .env файле ENVIRONMENT=production, можете так свапаться)
-Запуск в фоновом режиме:
-docker-compose -f docker-compose.prod.yml up -d --build 
+### 3. Run in development mode
 
-Осатновка и удаление обьемов:
-docker-compose -f docker-compose.prod.yml down 
+Set `ENVIRONMENT=development` in your `.env` file, then start the containers:
 
-4. Структура проекта
-# Структура проекта 
+```bash
+docker-compose up -d --build
+```
 
-├── backend/               # Бэкенд-приложение (Django)
-│   ├── app/               # Основные приложения и их функции
-│   │   ├── db/            # Конфигурация / миграции базы данных
-│   │   ├── learning/      # Модуль/приложение корень проекта
-│   │   ├── polls/         # Модуль/приложение основных аспектов проекта
-│   │   ├── staticfiles/   # Сборщик статических файлов приложения
-│   │   └── users/         # Модуль управления пользователями и авторизации
-│   ├── entrypoint.sh      # Скрипт инициализации контейнера бэкенда
-│   ├── manage.py          # Скрипт управления Django
-│   ├── requirements.txt   # Зависимости Python
-│   └── Dockerfile         # Инструкция сборки Docker-образа для бэкенда
-├── frontend/              # Фронтенд-приложение
-│   ├── src/               # Исходный код интерфейса
-│   │   ├── css/           # Стили интерфейса 
-│   └── js/                # JavaScript files for index and dashboard
-│   │   ├── index.html     # Страница авторизации и входа
-│   │   └── dashboard.html # Основная страница 
-│   └── Dockerfile         # Инструкция сборки Docker-образа для фронтенда
-├── nginx/                 # Веб-сервер и обратный прокси (Reverse Proxy)
-│   ├── conf/
-│   │   └── default.conf   # Настройки маршрутизации запросов (Nginx)
-│   └── Dockerfile         # Инструкция сборки Docker-образа для Nginx
-├── .env                   # Локальные переменные окружения (скрытый файл)
-├── .env.example           # Шаблон переменных окружения для команды
-├── .gitignore             # Список файлов, игнорируемых Git
-├── docker-compose.yml     # Конфигурация оркестрации всех контейнеров
-└── README.md              # Документация проекта
+Useful commands:
 
-5. Переменные окружения 
-# Переменные окружения
-SECRET_KEY String django-insecure-xyz...  - Секретный ключ Django для защиты данных, сессий, токенов.
-DEBUG Boolean False  - Режим отладки Django. На продакшене обязательно False.
-ENVIRONMENT String development/production - Указываешь каким образом ты хочешь запустить проект
-DATABASE_URL Строка подключения к базе данных PostgreSQL postgres://user:pass@postgres_db:5432/db
-REDIS_URL Строка подключения к кэшу Redis redis://redis_cache:6379/0
+| Command | Description |
+|---------|-------------|
+| `docker compose ps` | Show container status |
+| `docker compose logs backend` | Show backend container logs |
+| `docker compose exec backend python manage.py shell` | Open the Django interactive shell |
+| `docker-compose down` | Stop the containers |
 
+### 4. Run in production mode
 
-6. Запустить сервер
+Set `ENVIRONMENT=production` in your `.env` file, then start the containers in the background:
+
+```bash
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+Stop the containers and remove volumes:
+
+```bash
+docker-compose -f docker-compose.prod.yml down -v
+```
+
+### Running without Docker
+
+You need a running PostgreSQL instance and a configured `.env` file.
+
+```bash
+cd backend
+pip install -r requirements.txt
+python manage.py migrate
 python manage.py runserver
+```
 
-## API Endpoints
+## Environment Variables
 
-| Method | URL | Описание |
-|--------|-----|----------|
-| POST | api/users/register/ | Регистрация |
-| POST | api/users/login/ | Вход, получение токенов |
-| POST | api/users/logout/ | Выход, блокировка токена |
-| POST | api/users/login/refresh/ | Обновление access токена |
-| GET/POST | api/polls/projects/ | Список / создание проектов |
-| GET/PUT/DELETE | /polls/projects/{id}/ | Просмотр / редактирование / удаление |
-| GET/POST | api/polls/tasks/ | Список / создание задач |
-| GET/PUT/DELETE | api/polls/tasks/{id}/ | Просмотр / редактирование / удаление |
-| GET/POST | api/polls/comments/ | Список / создание комментариев |
-| GET/PUT/DELETE | api/polls/comments/{id}/ | Просмотр / редактирование / удаление |
-| GET | /api/docs/ | Swagger документация |
-
-## Аутентификация
-Bearer Token — добавь заголовок:
-Authorization: Bearer <access_token>
+| Variable | Type | Example | Description |
+|----------|------|---------|-------------|
+| `SECRET_KEY` | String | `django-insecure-xyz...` | Django secret key used to protect sessions, tokens, and signed data |
+| `DEBUG` | Boolean | `False` | Django debug mode. Must be `False` in production |
+| `ENVIRONMENT` | String | `development` / `production` | Selects how the project runs |
+| `DATABASE_URL` | String | `postgres://user:pass@postgres_db:5432/db` | PostgreSQL
